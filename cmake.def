@@ -1,0 +1,24 @@
+Bootstrap: localimage
+From: ros-pytorch.sif
+
+%post
+
+    echo "deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu xenial main " >> etc/apt/sources.list
+    echo "deb-src http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu xenial main " >> etc/apt/sources.list
+    gpg --keyserver keyserver.ubuntu.com --recv-key 60C317803A41BA51845E371A1E9377A2BA9EF27F && gpg --export --armor 60C317803A41BA51845E371A1E9377A2BA9EF27F | apt-key add -
+    apt update && apt install -y gcc-7 g++-7 wget
+    rm /usr/bin/gcc
+    rm /usr/bin/g++
+    ln -s /usr/bin/gcc-7 /usr/bin/gcc
+    ln -s /usr/bin/g++-7 /usr/bin/g++
+
+    wget https://github.com/Kitware/CMake/releases/download/v3.18.5/cmake-3.18.5-Linux-x86_64.tar.gz
+    tar -xvf cmake-3.18.5-Linux-x86_64.tar.gz
+    cd cmake-3.18.5-Linux-x86_64
+    cp -r bin /usr/
+    cp -r share /usr/
+    cp -r doc /usr/share/
+    cp -r man /usr/share/
+    cd ..
+    rm -r cmake-3.18.5-Linux-x86_64
+    rm cmake-3.18.5-Linux-x86_64.tar.gz

@@ -1,0 +1,31 @@
+Bootstrap: localimage
+From: ../pytorch/pytorch_1604.sif
+
+%post
+
+    sed -i 's+http://archive.ubuntu.com+http://ie.archive.ubuntu.com+g' /etc/apt/sources.list
+    sed -i 's+http://us.archive.ubuntu.com+http://ie.archive.ubuntu.com+g' /etc/apt/sources.list
+    echo "deb http://packages.ros.org/ros/ubuntu xenial main" > /etc/apt/sources.list.d/ros-latest.list
+    apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+    apt update && apt install -y ros-kinetic-ros-base
+
+    apt install -y libflann-dev \
+                    libboost-system-dev \
+                    libboost-filesystem-dev \
+                    ros-kinetic-opencv3 \
+                    ros-kinetic-cv-bridge \
+                    ros-kinetic-image-transport \
+                    wget
+
+    wget https://github.com/Kitware/CMake/releases/download/v3.18.5/cmake-3.18.5-Linux-x86_64.tar.gz
+    tar -xvf cmake-3.18.5-Linux-x86_64.tar.gz
+    cd cmake-3.18.5-Linux-x86_64
+    cp -r bin /usr/
+    cp -r share /usr/
+    cp -r doc /usr/share/
+    cp -r man /usr/share/
+    cd ..
+    rm -r cmake-3.18.5-Linux-x86_64
+    rm cmake-3.18.5-Linux-x86_64.tar.gz
+    # sh https://github.com/Kitware/CMake/releases/download/v3.19.0/cmake-3.19.0-Linux-x86_64.sh
+    # apt update && apt install -y --reinstall cmake
