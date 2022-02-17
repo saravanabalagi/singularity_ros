@@ -4,11 +4,29 @@ From: ros:kinetic-ros-core-xenial
 %post
 
   apt update
-
-  apt install -y build-essential
+  apt install -y build-essential software-properties-common wget
   apt install -y libflann-dev libboost-system-dev libboost-filesystem-dev
-  apt -y install ros-kinetic-opencv3 ros-kinetic-cv-bridge ros-kinetic-image-transport
+  apt install -y ros-kinetic-opencv3 ros-kinetic-cv-bridge ros-kinetic-image-transport
 
-%environment
-  echo "sourcing ros kinetic setup.sh file"
-  . /opt/ros/kinetic/setup.sh
+  # update gcc and g++
+  add-apt-repository ppa:ubuntu-toolchain-r/test && \
+    apt update && \
+    apt install -y gcc-9 g++-9 && \
+    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-9 && \
+    update-alternatives --config gcc && \
+    gcc --version && \
+    g++ --version
+
+  # update cmake
+  export CMAKE_VERSION=3.22.2 \
+    CMAKE_INSTALL_DIR=/opt/cmake
+  wget -O cmake-install.sh https://github.com/Kitware/CMake/releases/download/v$CMAKE_VERSION/cmake-$CMAKE_VERSION-linux-x86_64.sh && \
+    mkdir $CMAKE_INSTALL_DIR && \
+    sh cmake-install.sh --skip-license --prefix=$CMAKE_INSTALL_DIR && \
+    ln -sf $CMAKE_INSTALL_DIR/bin/cmake /usr/bin/cmake && \
+    rm cmake-install.sh && \
+    cmake --version
+
+# %environment
+#   echo "sourcing ros kinetic setup.sh file"
+#   . /opt/ros/kinetic/setup.sh
