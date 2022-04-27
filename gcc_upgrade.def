@@ -1,0 +1,18 @@
+Bootstrap: localimage
+From: ./htmap.sif
+
+%post
+# apt-get install -y software-properties-common
+# add-apt-repository ppa:ubuntu-toolchain-r/test
+# add toolchain-r/test ppa
+echo "deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu xenial main" >> etc/apt/sources.list
+echo "deb-src http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu xenial main" >> etc/apt/sources.list
+gpg --keyserver keyserver.ubuntu.com --recv-key 60C317803A41BA51845E371A1E9377A2BA9EF27F && gpg --export --armor 60C317803A41BA51845E371A1E9377A2BA9EF27F | apt-key add -
+
+apt update
+apt install -y gcc-7 g++-7
+update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 60 \
+                         --slave /usr/bin/g++ g++ /usr/bin/g++-7 
+update-alternatives --config gcc
+gcc --version
+g++ --version

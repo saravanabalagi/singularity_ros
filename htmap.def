@@ -1,0 +1,83 @@
+Bootstrap: docker
+From: nvidia/cuda:11.1-cudnn8-devel-ubuntu16.04
+
+%post
+
+export DEBIAN_FRONTEND=noninteractive
+
+# add deadsnakes ppa
+echo "deb http://ppa.launchpad.net/deadsnakes/ppa/ubuntu xenial main" >> etc/apt/sources.list
+echo "deb-src http://ppa.launchpad.net/deadsnakes/ppa/ubuntu xenial main" >> etc/apt/sources.list
+gpg --keyserver keyserver.ubuntu.com --recv-key f23c5a6cf475977595c89f51ba6932366a755776 && gpg --export --armor f23c5a6cf475977595c89f51ba6932366a755776 | apt-key add -
+
+apt update && apt install -y \
+  git \
+  curl \
+  python3.8 \
+  python3.8-distutils \
+  python3-virtualenv
+
+ln -sf /usr/bin/python3.8 /usr/bin/python3 && \
+  ln -sf /usr/bin/python3 /usr/bin/python && \
+  python --version
+
+# install essentials
+apt update && apt install -y \
+  build-essential \
+  ffmpeg \
+  parallel \
+  pv \
+  jq \
+  bc \
+  zip \
+  unzip \
+  unrar \
+  curl \
+  wget \
+  git \
+  cmake
+
+# install nodejs and yarn
+# curl -sL https://deb.nodesource.com/setup_14.x | bash -
+# apt install -y nodejs
+# npm install -g yarn
+
+# install ros
+sed -i 's+http://archive.ubuntu.com+http://ie.archive.ubuntu.com+g' /etc/apt/sources.list
+sed -i 's+http://us.archive.ubuntu.com+http://ie.archive.ubuntu.com+g' /etc/apt/sources.list
+echo "deb http://packages.ros.org/ros/ubuntu xenial main" > /etc/apt/sources.list.d/ros-latest.list
+apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+apt update && apt install -y ros-kinetic-ros-base
+
+# install htmap deps
+apt install -y libflann-dev \
+                libboost-system-dev \
+                libboost-filesystem-dev \
+                ros-kinetic-opencv3 \
+                ros-kinetic-cv-bridge \
+                ros-kinetic-image-transport
+
+# update cmake
+wget https://github.com/Kitware/CMake/releases/download/v3.18.5/cmake-3.18.5-Linux-x86_64.tar.gz
+tar -xvf cmake-3.18.5-Linux-x86_64.tar.gz
+cd cmake-3.18.5-Linux-x86_64
+cp -r bin /usr/
+cp -r share /usr/
+cp -r doc /usr/share/
+cp -r man /usr/share/
+cd ..
+rm -r cmake-3.18.5-Linux-x86_64
+rm cmake-3.18.5-Linux-x86_64.tar.gz
+cmake --version
+
+# update gcc g++
+echo "deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu xenial main" >> etc/apt/sources.list
+echo "deb-src http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu xenial main" >> etc/apt/sources.list
+gpg --keyserver keyserver.ubuntu.com --recv-key 60C317803A41BA51845E371A1E9377A2BA9EF27F && gpg --export --armor 60C317803A41BA51845E371A1E9377A2BA9EF27F | apt-key add -
+apt update
+apt install -y gcc-7 g++-7
+update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 60 \
+                    --slave /usr/bin/g++ g++ /usr/bin/g++-7 
+update-alternatives --config gcc
+gcc --version
+g++ --version
